@@ -113,9 +113,15 @@ RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
   && apk del .build-deps-yarn \
   # smoke test
   && yarn --version
-
-COPY docker-entrypoint.sh /usr/local/bin/
-COPY angular_builder.sh /usr/local/bin/
+  
+RUN chmod 775 /usr/local/bin/ \
+  && chown -R 1000 /usr/local/bin/ \
+  && chmod -R "g+rwX" /usr/local/bin/ \
+  && chown -R 1000:root /usr/local/bin/
+  
+COPY --chown=1000:0 docker-entrypoint.sh /usr/local/bin/
+COPY --chown=1000:0 angular_builder.sh /usr/local/bin/
+COPY --chown=1000:0 ocimage /usr/local/bin/
 
 WORKDIR /workspace/source
 CMD ["/bin/sh","/usr/local/bin/angular_builder.sh","run"]
